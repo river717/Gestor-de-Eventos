@@ -1,27 +1,24 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { login } from '../services/api';
 
 const LoginScreen = ({ navigation }) => {
-  const [email, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [contraseña, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLogin = () => {
     setLoading(true);
-    try {
-      // Llama al servicio `login` con las credenciales ingresadas
-      const response = await login(email, contraseña);
 
-      // Si las credenciales son válidas, navega a `HomeTabs`
-      Alert.alert('Éxito', `Bienvenido ${response.user.nombre}`);
-      navigation.replace('HomeTabs');
-    } catch (error) {
-      // Muestra un mensaje de error
-      Alert.alert('Error', error.message);
-    } finally {
+    // Validación simulada
+    setTimeout(() => {
+      if (email === 'admin' && contraseña === 'admin123') {
+        Alert.alert('Éxito', 'Bienvenido admin');
+        navigation.replace('HomeTabs');
+      } else {
+        Alert.alert('Error', 'Usuario o contraseña incorrectos');
+      }
       setLoading(false);
-    }
+    }, 1000); // Simula un tiempo de respuesta
   };
 
   return (
@@ -29,11 +26,10 @@ const LoginScreen = ({ navigation }) => {
       <Text style={styles.title}>Iniciar Sesión</Text>
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder="Usuario"
         autoCapitalize="none"
-        keyboardType="email-address"
         value={email}
-        onChangeText={setUsername}
+        onChangeText={setEmail}
       />
       <TextInput
         style={styles.input}
