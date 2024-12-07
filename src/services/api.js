@@ -1,19 +1,20 @@
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: 'https://api.example.com',  // URL de la api
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+const api = 'http://localhost:3000/api';
 
-export const getData = async () => {
+
+export const login = async (email, contraseña) => {
   try {
-    const response = await api.get('/data');
-    return response.data;
+    const response = await axios.post(`${api}/auth/login`, { email, contraseña });
+    return response.data; // Información del usuario o mensaje de éxito
   } catch (error) {
-    console.error('Error fetching data', error);
-    throw error;
+    if (error.response) {
+      // Respuesta de error del servidor
+      throw new Error(error.response.data.error || 'Error al iniciar sesión.');
+    } else {
+      // Otro tipo de error (conexión, timeout, etc.)
+      throw new Error('No se pudo conectar con el servidor.');
+    }
   }
 };
 

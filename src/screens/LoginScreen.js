@@ -1,17 +1,26 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { login } from '../services/api';
 
 const LoginScreen = ({ navigation }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setUsername] = useState('');
+  const [contraseña, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    // Comprobamos las credenciales predeterminadas
-    if (username === '' && password === '') {
-      // Si son correctas, navegamos a Home
+  const handleLogin = async () => {
+    setLoading(true);
+    try {
+      // Llama al servicio `login` con las credenciales ingresadas
+      const response = await login(email, contraseña);
+
+      // Si las credenciales son válidas, navega a `HomeTabs`
+      Alert.alert('Éxito', `Bienvenido ${response.user.nombre}`);
       navigation.replace('HomeTabs');
-    } else {
-      alert('Credenciales incorrectas');
+    } catch (error) {
+      // Muestra un mensaje de error
+      Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -20,18 +29,24 @@ const LoginScreen = ({ navigation }) => {
       <Text style={styles.title}>Iniciar Sesión</Text>
       <TextInput
         style={styles.input}
-        placeholder="Usuario"
-        value={username}
+        placeholder="Email"
+        autoCapitalize="none"
+        keyboardType="email-address"
+        value={email}
         onChangeText={setUsername}
       />
       <TextInput
         style={styles.input}
         placeholder="Contraseña"
         secureTextEntry
-        value={password}
+        value={contraseña}
         onChangeText={setPassword}
       />
-      <Button title="Iniciar sesión" onPress={handleLogin} />
+      <Button
+        title={loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+        onPress={handleLogin}
+        disabled={loading}
+      />
     </View>
   );
 };
